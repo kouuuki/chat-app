@@ -63,7 +63,7 @@ export default function Messages() {
 
   const handleCreateChannel = async (e: any) => {
     e.preventDefault();
-    const channelId = await createChannel("hogepiyo");
+    const channelId = await createChannel(channelName);
     if (currentUser && channelId) {
       await createUserChannel([currentUser.uid], channelId);
       handleClose();
