@@ -67,6 +67,7 @@ export default function Messages() {
     if (currentUser && channelId) {
       await createUserChannel([currentUser.uid], channelId);
       handleClose();
+      setChannelName("");
     }
   };
 
