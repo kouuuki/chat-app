@@ -15,6 +15,7 @@ import { createMessage } from "@/libs/firestore/messages";
 import { getChannel } from "@/libs/firestore/channels";
 import { MyMessage, OtherMessage } from "@/components/Message";
 import { Channel } from "@/types/firestore";
+import { useRouter } from "next/router";
 
 type Props = {
   channelId: string;
@@ -22,6 +23,7 @@ type Props = {
 };
 
 export default function Messages({ channelId, channel }: Props) {
+  const router = useRouter();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const { currentUser } = useCurrentUser();
@@ -52,10 +54,19 @@ export default function Messages({ channelId, channel }: Props) {
       });
     };
 
-    const listener = createListener();
+    if (channel) {
+      const listener = createListener();
 
-    return () => listener();
+      return () => listener();
+    }
   }, []);
+
+  if (!channel) {
+    console.log("d");
+    if (typeof window !== "undefined") {
+      router.push("/404");
+    }
+  }
 
   if (!currentUser) {
     return <div>Loading...</div>;
@@ -107,7 +118,7 @@ export default function Messages({ channelId, channel }: Props) {
             />
             <button onClick={sendMessage} type="submit">
               <svg
-                className="h-5 w-5 origin-center rotate-90 transform text-blue-400 text-gray-500"
+                className="h-5 w-5 origin-center rotate-90 transform text-blue-400"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"

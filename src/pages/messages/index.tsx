@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
@@ -14,6 +15,8 @@ import { getUser } from "@/libs/firestore/users";
 import Spinner from "@/components/Spinner";
 
 export default function Messages() {
+  const router = useRouter();
+  const [channelName, setChannelName] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const { currentUser } = useCurrentUser();
   const [channels, setChannels] = useState<any>([]);
@@ -52,7 +55,7 @@ export default function Messages() {
     if (currentUser) {
       init(currentUser.uid);
     }
-  }, [currentUser]);
+  }, [currentUser, isOpen]);
 
   if (!user) {
     return <Spinner />;
@@ -62,7 +65,8 @@ export default function Messages() {
     e.preventDefault();
     const channelId = await createChannel("hogepiyo");
     if (currentUser && channelId) {
-      createUserChannel([currentUser.uid], channelId);
+      await createUserChannel([currentUser.uid], channelId);
+      handleClose();
     }
   };
 
@@ -80,9 +84,23 @@ export default function Messages() {
           onRequestClose={handleClose}
           contentLabel="Example Modal"
         >
-          <form className="h-full w-full">
-            <input />
-            <button onClick={handleCreateChannel} type="submit">
+          <form className="h-full w-full" onSubmit={handleCreateChannel}>
+            <h2 className="font-bold">チャンネルを作成</h2>
+            <div className="mt-4" />
+            <input
+              required
+              value={channelName}
+              onChange={(e) => setChannelName(e.target.value)}
+              className="focus:shadow-outline w-full appearance-none rounded border py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none"
+              id="title"
+              type="text"
+              placeholder="チャンネル名"
+            />
+            <div className="mt-4" />
+            <button
+              className="focus:shadow-outline rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700 focus:outline-none"
+              type="submit"
+            >
               作成
             </button>
           </form>
@@ -115,18 +133,31 @@ export default function Messages() {
               </div>
             </div>
             <button
-              className="mx-3 block rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              className="mx-3 rounded-full bg-blue-700 p-2 text-center text-sm font-medium text-white hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               type="button"
               data-modal-toggle="default-modal"
               onClick={handleClick}
             >
-              T
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#000000"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
             </button>
             <ul className="h-[32rem] overflow-auto">
               <h2 className="my-2 mb-2 ml-3 text-lg text-gray-600">Chats</h2>
-              {channels.map((a: Channel) => {
+              {channels.map((a: Channel, i: number) => {
                 return (
-                  <li key={a.title}>
+                  <li key={`${i}${a.title}`}>
                     <Link
                       href={`/messages/${a.channelId}`}
                       className="flex cursor-pointer items-center border-b border-gray-300 px-3 py-2 text-sm transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none"

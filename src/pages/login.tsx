@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { useState, ChangeEvent } from "react";
 import { auth } from "@/libs/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -9,6 +10,7 @@ type FormValues = {
 };
 
 export default function Login() {
+  const router = useRouter();
   const [formValues, setFormValues] = useState<FormValues>({
     email: "",
     password: "",
@@ -33,6 +35,7 @@ export default function Login() {
         formValues.email,
         formValues.password
       );
+      router.push("/messages");
     } catch (error) {}
   };
 

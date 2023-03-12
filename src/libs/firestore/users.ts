@@ -5,14 +5,14 @@ import { User as UserType } from "@/types/firestore";
 
 export async function createUserProfile(
   user: User,
-  imageUrl: string,
-  name: string
+  name: string,
+  imageUrl: string
 ) {
   try {
     await setDoc(doc(db, "users", user.uid), {
-      name: name,
-      imageUrl,
       user: user.uid,
+      name,
+      imageUrl,
     });
   } catch (error) {
     console.error("Error creating user profile", error);

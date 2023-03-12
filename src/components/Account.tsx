@@ -73,7 +73,6 @@ export default function Account() {
                   id="file"
                   placeholder="File"
                   aria-label="file"
-                  required
                   onChange={(event: React.FormEvent) => {
                     const files = (event.target as HTMLInputElement).files;
 
