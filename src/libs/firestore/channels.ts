@@ -47,7 +47,7 @@ export async function fetchChannels(channelIds: string[]) {
     );
     const channelsSnapshot = await getDocs(channelsQuery);
     return channelsSnapshot.docs.map((doc) => {
-      return doc.data();
+      return doc.data() as Channel;
     });
   } catch (error) {
     console.error("Error fetch channels", error);

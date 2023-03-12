@@ -1,23 +1,20 @@
+import { useRouter } from "next/router";
 import { useState, ChangeEvent } from "react";
-import { auth, storage } from "@/libs/firebase";
-import { createUserWithEmailAndPassword, User } from "firebase/auth";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { auth } from "@/libs/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import Link from "next/link";
-import { createUserProfile } from "@/libs/firestore/users";
-import FilePreview from "@/components/PreviewFile";
 
 type FormValues = {
   email: string;
   password: string;
-  name: string;
 };
 
-export default function Account() {
-  const [file, setFile] = useState<File | null>(null);
+export default function Login() {
+  const [errorMessages, setErrorMessages] = useState("");
+  const router = useRouter();
   const [formValues, setFormValues] = useState<FormValues>({
     email: "",
     password: "",
-    name: "",
   });
   const handleChange = (
     event: ChangeEvent<
@@ -31,27 +28,18 @@ export default function Account() {
     setFormValues({ ...formValues, [name]: value });
   };
 
-  const uploadImage = async (user: User, file: File) => {
-    const storageRef = ref(
-      storage,
-      `users/${user.uid}/profile-image/${"test"}`
-    );
-    await uploadBytes(storageRef, file);
-    const downloadURL = await getDownloadURL(storageRef);
-    return downloadURL;
-  };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const userCredential = await createUserWithEmailAndPassword(
+      await signInWithEmailAndPassword(
         auth,
         formValues.email,
         formValues.password
       );
-      const user = userCredential.user;
-      const imageUrl = file ? await uploadImage(user, file) : "";
-      await createUserProfile(user, formValues.name, imageUrl);
-    } catch (error) {}
+      router.push("/messages");
+    } catch (error) {
+      setErrorMessages("メールアドレスまたはパスワードが間違っています");
+    }
   };
 
   return (
@@ -64,40 +52,8 @@ export default function Account() {
               onSubmit={handleSubmit}
             >
               <p className="text-center text-lg font-medium font-bold text-white">
-                新規登録
+                ログイン
               </p>
-              {file && <FilePreview file={file} />}
-              <div className="mt-4" />
-              <div>
-                <input
-                  className="w-full cursor-pointer rounded bg-gray-300 px-5 py-1 text-gray-700 focus:bg-white focus:outline-none"
-                  type="file"
-                  id="file"
-                  placeholder="File"
-                  aria-label="file"
-                  onChange={(event: React.FormEvent) => {
-                    const files = (event.target as HTMLInputElement).files;
-
-                    if (files && files.length > 0) {
-                      setFile(files[0]);
-                    }
-                  }}
-                />
-              </div>
-              <div className="mt-4">
-                <input
-                  className="w-full rounded bg-gray-300 px-5 py-1 text-gray-700 focus:bg-white focus:outline-none"
-                  type="name"
-                  id="name"
-                  name="name"
-                  maxLength={30}
-                  placeholder="Name"
-                  arial-label="Name"
-                  required
-                  value={formValues.name}
-                  onChange={handleChange}
-                />
-              </div>
               <div className="mt-4">
                 <input
                   className="w-full rounded bg-gray-300 px-5 py-1 text-gray-700 focus:bg-white focus:outline-none"
@@ -124,15 +80,20 @@ export default function Account() {
                   onChange={handleChange}
                 />
               </div>
+              {errorMessages && (
+                <p className="mt-4 text-center text-xs text-red-400">
+                  {errorMessages}
+                </p>
+              )}
               <div className="mt-4 text-center">
                 <button
                   className="rounded bg-gray-900 px-4 py-1 font-light tracking-wider text-white hover:bg-gray-800"
                   type="submit"
                 >
-                  新規登録
-                </button>
-                <Link className="mt-2 block text-white" href="/login">
                   ログイン
+                </button>
+                <Link className="mt-2 block text-white" href="/">
+                  新規登録
                 </Link>
               </div>
             </form>

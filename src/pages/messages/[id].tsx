@@ -35,7 +35,7 @@ export default function Messages({ channelId, channel }: Props) {
         messageRef,
         where("channel", "==", channelId),
         orderBy("createdAt"),
-        limit(10)
+        limit(50)
       );
 
       return onSnapshot(q, (querySnapshot) => {
@@ -62,7 +62,6 @@ export default function Messages({ channelId, channel }: Props) {
   }, []);
 
   if (!channel) {
-    console.log("d");
     if (typeof window !== "undefined") {
       router.push("/404");
     }
@@ -88,8 +87,8 @@ export default function Messages({ channelId, channel }: Props) {
       </Head>
       <div className="block lg:col-span-2">
         <div className="w-full bg-white">
-          <div className="relative flex items-center border-b border-gray-300 p-3">
-            <span className="ml-2 block font-bold text-gray-600">
+          <div className="relative flex items-center justify-center border-b border-gray-300 p-3">
+            <span className="block font-bold text-gray-600">
               {channel?.title}
             </span>
           </div>

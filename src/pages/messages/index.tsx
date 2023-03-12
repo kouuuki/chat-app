@@ -13,14 +13,21 @@ import { Channel, User } from "@/types/firestore";
 import Header from "@/components/Header";
 import { getUser } from "@/libs/firestore/users";
 import Spinner from "@/components/Spinner";
+import { useSearchChannels } from "@/hooks/useSearchChannels";
 
 export default function Messages() {
-  const router = useRouter();
+  const [focusSearch, setFocusSearch] = useState(false);
   const [channelName, setChannelName] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const { currentUser } = useCurrentUser();
-  const [channels, setChannels] = useState<any>([]);
+  const [channels, setChannels] = useState<Channel[]>([]);
   const [user, setUser] = useState<User | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const results = useSearchChannels(searchTerm);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
 
   const handleClick = () => {
     setIsOpen(true);
@@ -44,7 +51,7 @@ export default function Messages() {
   useEffect(() => {
     async function init(userUid: string) {
       const userChannels = await fetchUserChannels(userUid);
-      const channelIds: any = userChannels.map((userChannel) => {
+      const channelIds: string[] = userChannels.map((userChannel) => {
         return userChannel.channel;
       });
       if (channelIds.length === 0) return false;
@@ -61,13 +68,19 @@ export default function Messages() {
     return <Spinner />;
   }
 
-  const handleCreateChannel = async (e: any) => {
+  const handleCreateChannel = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const channelId = await createChannel(channelName);
     if (currentUser && channelId) {
       await createUserChannel([currentUser.uid], channelId);
       handleClose();
       setChannelName("");
+    }
+  };
+
+  const joinChannel = async (channelId: string) => {
+    if (currentUser) {
+      await createUserChannel([currentUser.uid], channelId);
     }
   };
 
@@ -94,6 +107,7 @@ export default function Messages() {
               onChange={(e) => setChannelName(e.target.value)}
               className="focus:shadow-outline w-full appearance-none rounded border py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none"
               id="title"
+              maxLength={30}
               type="text"
               placeholder="チャンネル名"
             />
@@ -109,7 +123,7 @@ export default function Messages() {
         <div className="min-w-full rounded border">
           <div className="border-r border-gray-300">
             <Header name={user.name} imageUrl={user.imageUrl} />
-            <div className="mx-3 my-3">
+            <div className="relative mx-3 my-3">
               <div className="relative text-gray-600">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-2">
                   <svg
@@ -125,12 +139,42 @@ export default function Messages() {
                   </svg>
                 </span>
                 <input
+                  // onBlur={() => setFocusSearch(false)}
+                  onFocus={() => setFocusSearch(true)}
                   type="search"
                   className="block w-full rounded bg-gray-100 py-2 pl-10 outline-none"
                   name="search"
-                  placeholder="Search"
+                  placeholder="チャンネルを検索"
                   required
+                  onChange={handleInputChange}
                 />
+              </div>
+              <div
+                className={`absolute flex w-full border border-gray-300 bg-white p-4 ${
+                  focusSearch ? "block" : "hidden"
+                }`}
+              >
+                <ul className="w-96">
+                  {results
+                    .filter(
+                      (e) => !channels.map((c) => c.channelId).includes(e.id)
+                    )
+                    .map((e, i) => {
+                      return (
+                        <li
+                          key={`${i}-${e.title}`}
+                          className="w-full border-b-2 border-neutral-100 border-opacity-100 py-4 dark:border-opacity-50"
+                        >
+                          <button
+                            onClick={() => joinChannel(e.id)}
+                            className="w-full text-left"
+                          >
+                            {e.title}
+                          </button>
+                        </li>
+                      );
+                    })}
+                </ul>
               </div>
             </div>
             <button
@@ -155,7 +199,9 @@ export default function Messages() {
               </svg>
             </button>
             <ul className="h-[32rem] overflow-auto">
-              <h2 className="my-2 mb-2 ml-3 text-lg text-gray-600">Chats</h2>
+              <h2 className="my-2 mb-2 ml-3 text-lg text-gray-600">
+                参加中のチャンネル
+              </h2>
               {channels.map((a: Channel, i: number) => {
                 return (
                   <li key={`${i}${a.title}`}>
@@ -167,9 +213,6 @@ export default function Messages() {
                         <div className="flex justify-between">
                           <span className="ml-2 block font-semibold text-gray-600">
                             {a.title}
-                          </span>
-                          <span className="ml-2 block text-sm text-gray-600">
-                            25 minutes
                           </span>
                         </div>
                         <span className="ml-2 block text-sm text-gray-600">
