@@ -21,18 +21,13 @@ export async function createUserProfile(
 
 export async function getUser(userUid: string) {
   try {
-    console.log(userUid);
     const userRef = doc(db, "users", userUid);
     const userDoc = await getDoc(userRef);
-    console.log("AAAAAAA", userDoc);
     if (userDoc.exists()) {
-      console.log("BBBBB");
       return userDoc.data() as UserType;
     }
-    console.log("CCCCCC");
     return null;
   } catch (error) {
-    console.error("user not exist", error);
     return null;
   }
 }

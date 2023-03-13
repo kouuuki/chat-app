@@ -34,7 +34,6 @@ export default function Messages() {
     }
 
     if (currentUser) {
-      console.log("GET USER");
       init(currentUser.uid);
     }
   }, [currentUser]);
@@ -55,8 +54,6 @@ export default function Messages() {
     }
   }, [currentUser, isOpen, openSuggestion]);
 
-  console.log({ currentUser });
-  console.log({ user });
   if (!user) {
     return <Spinner />;
   }
@@ -64,6 +61,7 @@ export default function Messages() {
   const handleCreateChannel = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const channelId = await createChannel(channelName);
+    console.log({ channelId });
     if (currentUser && channelId) {
       await createUserChannel([currentUser.uid], channelId);
       setIsOpen(false);
