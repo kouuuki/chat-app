@@ -61,7 +61,6 @@ export default function Messages() {
   const handleCreateChannel = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const channelId = await createChannel(channelName);
-    console.log({ channelId });
     if (currentUser && channelId) {
       await createUserChannel([currentUser.uid], channelId);
       setIsOpen(false);
