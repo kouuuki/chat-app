@@ -34,9 +34,10 @@ export default function Messages() {
     }
 
     if (currentUser) {
+      console.log("GET USER");
       init(currentUser.uid);
     }
-  }, [currentUser, isLoading, user]);
+  }, [currentUser]);
 
   useEffect(() => {
     async function init(userUid: string) {
@@ -54,6 +55,8 @@ export default function Messages() {
     }
   }, [currentUser, isOpen, openSuggestion]);
 
+  console.log({ currentUser });
+  console.log({ user });
   if (!user) {
     return <Spinner />;
   }

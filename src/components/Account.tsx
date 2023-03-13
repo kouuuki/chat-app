@@ -51,6 +51,7 @@ export default function Account() {
       const user = userCredential.user;
       const imageUrl = file ? await uploadImage(user, file) : "";
       await createUserProfile(user, formValues.name, imageUrl);
+      window.location.href = "/messages";
     } catch (error) {}
   };
 
