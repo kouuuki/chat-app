@@ -17,7 +17,7 @@ export default function Messages() {
   const [openSuggestion, setOpenSuggestion] = useState(false);
   const [channelName, setChannelName] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const { currentUser } = useCurrentUser();
+  const { currentUser, isLoading } = useCurrentUser();
   const [channels, setChannels] = useState<Channel[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,7 +36,7 @@ export default function Messages() {
     if (currentUser) {
       init(currentUser.uid);
     }
-  }, [currentUser]);
+  }, [currentUser, isLoading]);
 
   useEffect(() => {
     async function init(userUid: string) {
