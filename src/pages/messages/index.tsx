@@ -52,7 +52,7 @@ export default function Messages() {
     if (currentUser) {
       init(currentUser.uid);
     }
-  }, [currentUser, isOpen]);
+  }, [currentUser, isOpen, openSuggestion]);
 
   if (!user) {
     return <Spinner />;

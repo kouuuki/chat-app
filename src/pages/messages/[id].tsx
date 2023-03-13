@@ -77,7 +77,7 @@ export default function Messages({ channelId, channel }: Props) {
   };
 
   return (
-    <div className="block lg:col-span-2">
+    <div className="container mx-auto block lg:col-span-2">
       <div className="w-full bg-white">
         <div className="relative flex items-center justify-center border-b border-gray-300 p-3">
           <span className="block font-bold text-gray-600">
