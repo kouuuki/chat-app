@@ -36,7 +36,7 @@ export default function Messages() {
     if (currentUser) {
       init(currentUser.uid);
     }
-  }, [currentUser, isLoading]);
+  }, [currentUser, isLoading, user]);
 
   useEffect(() => {
     async function init(userUid: string) {
