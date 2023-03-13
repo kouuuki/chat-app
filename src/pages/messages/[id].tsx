@@ -1,4 +1,3 @@
-import Head from "next/head";
 import {
   collection,
   query,
@@ -59,7 +58,7 @@ export default function Messages({ channelId, channel }: Props) {
 
       return () => listener();
     }
-  }, []);
+  }, [channel, channelId]);
 
   if (!channel) {
     if (typeof window !== "undefined") {
@@ -78,57 +77,47 @@ export default function Messages({ channelId, channel }: Props) {
   };
 
   return (
-    <>
-      <Head>
-        <title>Chat App</title>
-        <meta name="description" content="Chat App" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <div className="block lg:col-span-2">
-        <div className="w-full bg-white">
-          <div className="relative flex items-center justify-center border-b border-gray-300 p-3">
-            <span className="block font-bold text-gray-600">
-              {channel?.title}
-            </span>
-          </div>
-          <div className="relative h-[40rem] w-full overflow-y-auto p-6">
-            <ul className="space-y-2">
-              {messages.map((message) => {
-                if (message.user === currentUser.uid) {
-                  return <MyMessage text={message.text} key={message.text} />;
-                } else {
-                  return (
-                    <OtherMessage text={message.text} key={message.text} />
-                  );
-                }
-              })}
-            </ul>
-          </div>
-          <div className="flex w-full items-center justify-between border-t border-gray-300 p-3">
-            <input
-              type="text"
-              placeholder="メッセージ"
-              className="mr-3 block w-full rounded-full bg-gray-100 py-2 pl-4 outline-none focus:text-gray-700"
-              name="message"
-              required
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-            <button onClick={sendMessage} type="submit">
-              <svg
-                className="h-5 w-5 origin-center rotate-90 transform text-blue-400"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-              </svg>
-            </button>
-          </div>
+    <div className="block lg:col-span-2">
+      <div className="w-full bg-white">
+        <div className="relative flex items-center justify-center border-b border-gray-300 p-3">
+          <span className="block font-bold text-gray-600">
+            {channel?.title}
+          </span>
+        </div>
+        <div className="relative h-[40rem] w-full overflow-y-auto p-6">
+          <ul className="space-y-2">
+            {messages.map((message) => {
+              if (message.user === currentUser.uid) {
+                return <MyMessage text={message.text} key={message.text} />;
+              } else {
+                return <OtherMessage text={message.text} key={message.text} />;
+              }
+            })}
+          </ul>
+        </div>
+        <div className="flex w-full items-center justify-between border-t border-gray-300 p-3">
+          <input
+            type="text"
+            placeholder="メッセージ"
+            className="mr-3 block w-full rounded-full bg-gray-100 py-2 pl-4 outline-none focus:text-gray-700"
+            name="message"
+            required
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+          <button onClick={sendMessage} type="submit">
+            <svg
+              className="h-5 w-5 origin-center rotate-90 transform text-blue-400"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+            </svg>
+          </button>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

@@ -60,7 +60,7 @@ export default function Login() {
                   type="email"
                   id="email"
                   name="email"
-                  placeholder="Email"
+                  placeholder="メールアドレス"
                   aria-label="email"
                   required
                   value={formValues.email}
@@ -73,7 +73,7 @@ export default function Login() {
                   type="password"
                   id="password"
                   name="password"
-                  placeholder="Password"
+                  placeholder="パスワード"
                   arial-label="password"
                   required
                   value={formValues.password}

@@ -8,13 +8,13 @@ import {
 } from "firebase/firestore";
 import { firestore as db } from "@/libs/firebase";
 
-type Product = {
+type Channel = {
   id: string;
   title: string;
 };
 
-export const useSearchChannels = (searchTerm: string): Product[] => {
-  const [results, setResults] = useState<Product[]>([]);
+export const useSearchChannels = (searchTerm: string): Channel[] => {
+  const [results, setResults] = useState<Channel[]>([]);
 
   useEffect(() => {
     const q = query(
@@ -25,13 +25,13 @@ export const useSearchChannels = (searchTerm: string): Product[] => {
     );
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const data: Product[] = [];
+      const data: Channel[] = [];
       querySnapshot.forEach((doc) => {
-        const product = {
+        const channel = {
           id: doc.id,
           title: doc.data().title,
         };
-        data.push(product);
+        data.push(channel);
       });
       setResults(data);
     });
